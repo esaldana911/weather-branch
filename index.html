@@ -3,19 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Weatherbit Weather</title>
+  <title>5-Day Weather Forecast</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #74b9ff, #0984e3);
       color: white;
-      height: 100vh;
       margin: 0;
+      padding: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      height: 100vh;
     }
     .container {
+      width: 90%;
+      max-width: 1000px;
       text-align: center;
       background: rgba(255,255,255,0.1);
       padding: 40px;
@@ -25,39 +28,56 @@
     h1 {
       font-size: 2.5rem;
     }
-    .temp {
-      font-size: 4rem;
-      margin: 10px 0;
+    .forecast-grid {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 20px;
     }
-    .desc {
-      font-size: 1.5rem;
-      text-transform: capitalize;
+    .forecast-day {
+      flex: 1 1 18%;
+      margin: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+    }
+    .forecast-day h3 {
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1 id="location">Loading...</h1>
-    <div class="temp" id="temp"></div>
-    <div class="desc" id="desc"></div>
+    <div id="forecast" class="forecast-grid"></div>
   </div>
 
   <script>
     async function fetchWeather() {
       const apiKey = "55cfafd1a4ed483cabc2549f3a3e803a";
       const city = "Cherry Hill";
-      const url = `https://api.weatherbit.io/v2.0/current?city=${city}&key=${apiKey}&units=I`;
+      const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${apiKey}&units=I&days=5`;
 
       try {
         const res = await fetch(url);
         const data = await res.json();
-        const weather = data.data[0];
+        const forecastEl = document.getElementById("forecast");
+        document.getElementById("location").textContent = `${data.city_name}, ${data.state_code}`;
 
-        document.getElementById("location").textContent = weather.city_name + ", " + weather.state_code;
-        document.getElementById("temp").textContent = weather.temp + "°F";
-        document.getElementById("desc").textContent = weather.weather.description;
+        data.data.forEach(day => {
+          const div = document.createElement("div");
+          div.className = "forecast-day";
+          const date = new Date(day.valid_date).toLocaleDateString(undefined, { weekday: 'short' });
+          div.innerHTML = `
+            <h3>${date}</h3>
+            <div>${day.temp}°F</div>
+            <div>${day.weather.description}</div>
+          `;
+          forecastEl.appendChild(div);
+        });
+
       } catch (err) {
-        document.getElementById("location").textContent = "Error loading weather";
+        document.getElementById("location").textContent = "Error loading forecast";
         console.error("Fetch error:", err);
       }
     }
@@ -66,3 +86,4 @@
   </script>
 </body>
 </html>
+
