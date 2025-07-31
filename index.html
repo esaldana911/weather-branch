@@ -11,42 +11,43 @@
       padding: 0;
       height: 100vh;
       background: linear-gradient(135deg, #6dd5fa, #2980b9);
-      color: #000;
       display: flex;
       justify-content: center;
       align-items: center;
+      color: #000;
     }
 
     .container {
       background: rgba(255, 255, 255, 0.2);
       border-radius: 20px;
-      padding: 40px;
+      padding: 50px;
       width: 95%;
-      max-width: 1600px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      max-width: 1800px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       text-align: center;
     }
 
     h1 {
-      font-size: 4rem;
-      margin-bottom: 40px;
+      font-size: 5rem;
+      margin-bottom: 60px;
       color: white;
       -webkit-text-stroke: 2px black;
+      text-stroke: 2px black;
     }
 
     .forecast {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 30px;
+      gap: 40px;
     }
 
     .day {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 20px;
-      padding: 30px 20px;
-      width: 220px;
-      height: 260px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 25px;
+      padding: 40px 30px;
+      width: 250px;
+      height: 320px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -54,28 +55,29 @@
     }
 
     .day h2 {
-      font-size: 2rem;
-      margin-bottom: 10px;
+      font-size: 2.5rem;
+      margin-bottom: 15px;
       color: #000;
     }
 
     .weather-icon {
-      width: 80px;
-      height: 80px;
-      margin: 10px 0;
+      width: 100px;
+      height: 100px;
+      margin: 15px 0;
     }
 
     .temp {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: bold;
       color: #000;
     }
 
     .desc {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       text-align: center;
       text-transform: capitalize;
       color: #000;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -124,8 +126,7 @@
     }
 
     fetchWeather();
-    setInterval(fetchWeather, 60 * 60 * 1000); // auto-update every hour
+    setInterval(fetchWeather, 60 * 60 * 1000); // update hourly
   </script>
 </body>
 </html>
-
