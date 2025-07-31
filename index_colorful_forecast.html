@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weatherbit 5-Day Forecast</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #6dd5fa, #2980b9);
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 40px;
+      width: 90%;
+      max-width: 1200px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 30px;
+      font-weight: 800;
+      -webkit-text-stroke: 1px white;
+    }
+
+    .forecast {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .day {
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 15px;
+      padding: 20px;
+      width: 180px;
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    .day:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .day h2 {
+      font-size: 1.8rem;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    .weather-icon {
+      width: 70px;
+      height: 70px;
+      margin: 10px 0;
+    }
+
+    .temp {
+      font-size: 1.6rem;
+      font-weight: bold;
+    }
+
+    .desc {
+      font-size: 1rem;
+      text-transform: capitalize;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="location">Loading...</h1>
+    <div class="forecast" id="forecast"></div>
+  </div>
+
+  <script>
+    async function fetchWeather() {
+      const apiKey = "55cfafd1a4ed483cabc2549f3a3e803a";
+      const city = "Cherry Hill";
+      const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${apiKey}&days=5&units=I`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const forecast = data.data;
+        const cityName = data.city_name + ", " + data.state_code;
+
+        document.getElementById("location").textContent = cityName;
+
+        const forecastContainer = document.getElementById("forecast");
+        forecastContainer.innerHTML = "";
+
+        forecast.forEach(day => {
+          const date = new Date(day.valid_date);
+          const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
+          const iconUrl = `https://www.weatherbit.io/static/img/icons/${day.weather.icon}.png`;
+
+          const card = document.createElement("div");
+          card.className = "day";
+          card.innerHTML = `
+            <h2>${dayName}</h2>
+            <img class="weather-icon" src="${iconUrl}" alt="${day.weather.description}" />
+            <div class="temp">${day.temp.toFixed(1)}°F</div>
+            <div class="desc">${day.weather.description}</div>
+          `;
+          forecastContainer.appendChild(card);
+        });
+      } catch (err) {
+        document.getElementById("location").textContent = "Error loading forecast";
+        console.error("Fetch error:", err);
+      }
+    }
+
+    fetchWeather();
+    setInterval(fetchWeather, 60 * 60 * 1000); // auto-update every hour
+  </script>
+</body>
+</html>
