@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>5-Day Weather Forecast</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #74b9ff, #0984e3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
+
+    .forecast-container {
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 30px 40px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.3);
+      max-width: 1200px;
+      width: 90%;
+      text-align: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    .forecast-container h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 4px #00000066;
+    }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+      flex: 1;
+      min-width: 160px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.3em;
+    }
+
+    .card .temp {
+      font-size: 2em;
+      margin: 10px 0;
+    }
+
+    .card .desc {
+      font-size: 1em;
+      text-transform: capitalize;
+    }
+
+    .weather-icon {
+      font-size: 2.5em;
+      margin: 10px 0;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="forecast-container">
+    <h1>Cherry Hill, NJ</h1>
+    <div class="cards" id="forecast"></div>
+  </div>
+
+  <script>
+    const apiKey = "55cfafd1a4ed483cabc2549f3a3e803a";
+    const city = "Cherry Hill";
+    const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${apiKey}&units=I&days=5`;
+
+    const iconsMap = {
+      "clear sky": "wi-day-sunny",
+      "few clouds": "wi-day-cloudy",
+      "scattered clouds": "wi-cloud",
+      "broken clouds": "wi-cloudy",
+      "shower rain": "wi-showers",
+      "rain": "wi-rain",
+      "thunderstorm": "wi-thunderstorm",
+      "snow": "wi-snow",
+      "mist": "wi-fog",
+      "overcast clouds": "wi-cloudy",
+    };
+
+    async function getForecast() {
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const days = data.data;
+        const container = document.getElementById("forecast");
+
+        days.forEach(day => {
+          const date = new Date(day.datetime);
+          const weekday = date.toLocaleDateString("en-US", { weekday: 'short' });
+          const iconKey = day.weather.description.toLowerCase();
+          const iconClass = iconsMap[iconKey] || "wi-day-sunny";
+
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <h3>${weekday}</h3>
+            <i class="wi ${iconClass} weather-icon"></i>
+            <div class="temp">${day.temp.toFixed(1)}°F</div>
+            <div class="desc">${day.weather.description}</div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Weather fetch error:", error);
+        document.getElementById("forecast").innerHTML = "<p>Unable to load weather data.</p>";
+      }
+    }
+
+    getForecast();
+  </script>
+</body>
+</html>
