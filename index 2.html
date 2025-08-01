@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Animated Forecast—Cherry Hill</title>
+  <style>
+    body { display:flex; justify-content:center; align-items:center;
+      margin:0;height:100vh;
+      background: radial-gradient(circle at top center, #6dd5fa, #2980b9);
+      font-family: 'Segoe UI', sans-serif; }
+    .container { text-align:center; padding:50px; background:rgba(255,255,255,0.2);
+      border-radius:20px; width:95%; max-width:1800px; }
+    h1 { font-size:5rem; color:white; -webkit-text-stroke:2px black; margin-bottom:60px;}
+    .forecast { display:flex; justify-content:center; flex-wrap:wrap; gap:40px; }
+    .day { background:rgba(255,255,255,0.95); border-radius:25px; padding:40px;
+      width:280px; height:340px; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; }
+    .day h2 { margin:10px 0; font-size:2.5rem; color:#000; }
+    .icon-svg { width:120px; height:120px; }
+    .temp { font-size:2.2rem; font-weight:bold; color:#000; }
+    .desc { font-size:1.3rem; color:#000; margin-top:10px; text-transform:capitalize; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="location">Loading...</h1>
+    <div class="forecast" id="forecast"></div>
+  </div>
+
+  <script>
+    async function fetchWeather() {
+      const apiKey = "55cfafd1a4ed483cabc2549f3a3e803a";
+      const res = await fetch(`https://api.weatherbit.io/v2.0/forecast/daily?city=Cherry Hill&key=${apiKey}&days=5&units=I`);
+      const { city_name, state_code, data } = await res.json();
+      document.getElementById("location").textContent = city_name + ", " + state_code;
+      const container = document.getElementById("forecast");
+      container.innerHTML = "";
+
+      data.forEach(day => {
+        const dayName = new Date(day.valid_date).toLocaleDateString('en-US',{ weekday:'short'});
+        let svg = `
+          <svg class="icon-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="32" r="12" fill="#FFD93B">
+              <animate attributeName="r" values="10;12;10" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        `;
+        container.insertAdjacentHTML("beforeend", `
+          <div class="day">
+            <h2>${dayName}</h2>
+            ${svg}
+            <div class="temp">${day.temp.toFixed(1)}°F</div>
+            <div class="desc">${day.weather.description}</div>
+          </div>`);
+      });
+    }
+    fetchWeather();
+    setInterval(fetchWeather, 3600000);
+  </script>
+</body>
+</html>
